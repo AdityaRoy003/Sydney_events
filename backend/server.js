@@ -14,20 +14,26 @@ require("./auth"); // Google OAuth strategy
 const app = express();
 
 // --- Middleware ---
-app.use(cors({ origin: "http://localhost:3000", credentials: true }));
+app.use(cors({ origin: process.env.FRONTEND_URL || "http://localhost:3000", credentials: true }));
 app.use(express.json());
 
 // --- Session + Passport ---
 app.use(session({
   secret: process.env.SESSION_SECRET || "secret",
   resave: false,
-  saveUninitialized: true
+  saveUninitialized: true,
+  cookie: {
+    secure: process.env.NODE_ENV === "production", // Secure cookies in production
+    sameSite: process.env.NODE_ENV === "production" ? "none" : "lax"
+  }
 }));
 app.use(passport.initialize());
 app.use(passport.session());
 
 // --- MongoDB connection (Mongoose v7+ syntax) ---
-mongoose.connect(process.env.MONGO_URI.replace("localhost", "127.0.0.1"))
+// Use MONGO_URI from env. If strictly localhost, use 127.0.0.1 for Node 17+
+const mongoUri = process.env.MONGO_URI || "mongodb://127.0.0.1:27017/sydney_events";
+mongoose.connect(mongoUri)
   .then(() => console.log("✅ MongoDB connected"))
   .catch(err => console.error("❌ MongoDB connection error:", err));
 
@@ -87,13 +93,14 @@ app.get("/auth/google",
 app.get("/auth/google/callback",
   passport.authenticate("google", { failureRedirect: "/" }),
   (req, res) => {
-    res.redirect("http://localhost:3000/dashboard");
+    // Redirect to frontend dashboard
+    res.redirect(`${process.env.FRONTEND_URL || "http://localhost:3000"}/dashboard`);
   }
 );
 
 app.get("/auth/logout", (req, res) => {
   req.logout(() => {
-    res.redirect("http://localhost:3000/login");
+    res.redirect(`${process.env.FRONTEND_URL || "http://localhost:3000"}/login`);
   });
 });
 

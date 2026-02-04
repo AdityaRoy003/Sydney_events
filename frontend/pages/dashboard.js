@@ -16,12 +16,13 @@ export default function Dashboard() {
 
   useEffect(() => {
     // Check login state first
-    axios.get("http://localhost:5000/me", { withCredentials: true })
+    const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+    axios.get(`${API_URL}/me`, { withCredentials: true })
       .then(() => {
         setAuthorized(true);
         setLoading(false);
         // Fetch events only if logged in
-        axios.get("http://localhost:5000/events", { withCredentials: true })
+        axios.get(`${API_URL}/events`, { withCredentials: true })
           .then(res => setEvents(res.data));
       })
       .catch(() => {
@@ -51,7 +52,8 @@ export default function Dashboard() {
     const note = window.prompt("Enter import notes (optional):");
     if (note === null) return; // Cancelled
 
-    await axios.post("http://localhost:5000/import", { eventId: id, importNotes: note }, { withCredentials: true });
+    const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+    await axios.post(`${API_URL}/import`, { eventId: id, importNotes: note }, { withCredentials: true });
     setEvents(events.map(ev => ev._id === id ? { ...ev, status: "imported" } : ev));
   };
 

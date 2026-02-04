@@ -6,7 +6,8 @@ export default function Navbar() {
   const [user, setUser] = useState(null);
 
   useEffect(() => {
-    axios.get("http://localhost:5000/me", { withCredentials: true })
+    const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+    axios.get(`${API_URL}/me`, { withCredentials: true })
       .then(res => setUser(res.data.user))
       .catch(() => setUser(null));
   }, []);
@@ -22,7 +23,7 @@ export default function Navbar() {
           <Link href="/dashboard" className="font-bold hover:text-blue-100 transition-colors">
             Dashboard
           </Link>
-          <a href="http://localhost:5000/auth/logout" className="font-bold hover:text-blue-100 transition-colors">
+          <a href={`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000"}/auth/logout`} className="font-bold hover:text-blue-100 transition-colors">
             Logout
           </a>
         </>

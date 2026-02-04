@@ -7,7 +7,8 @@ export default function Home() {
   const [events, setEvents] = useState([]);
 
   useEffect(() => {
-    axios.get("http://localhost:5000/events")
+    const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+    axios.get(`${API_URL}/events`)
       .then(res => setEvents(res.data))
       .catch(err => console.error(err));
   }, []);

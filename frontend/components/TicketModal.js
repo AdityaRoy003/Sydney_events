@@ -1,14 +1,14 @@
 import { useState } from 'react';
 import axios from 'axios';
-import { 
-  Dialog, 
-  DialogTitle, 
-  DialogContent, 
-  DialogContentText, 
-  TextField, 
-  DialogActions, 
-  Button, 
-  Checkbox, 
+import {
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogContentText,
+  TextField,
+  DialogActions,
+  Button,
+  Checkbox,
   FormControlLabel,
   Alert
 } from '@mui/material';
@@ -33,7 +33,8 @@ export default function TicketModal({ open, onClose, event }) {
     setError(null);
 
     try {
-      await axios.post('http://localhost:5000/subscribe', {
+      const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+      await axios.post(`${API_URL}/subscribe`, {
         email,
         consent,
         eventId: event._id
@@ -55,7 +56,7 @@ export default function TicketModal({ open, onClose, event }) {
         <DialogContentText className="mb-4">
           Enter your email to proceed to the ticket page. We'll verify you're human and keep you updated!
         </DialogContentText>
-        
+
         {error && <Alert severity="error" className="mb-4">{error}</Alert>}
 
         <TextField
@@ -69,12 +70,12 @@ export default function TicketModal({ open, onClose, event }) {
           onChange={(e) => setEmail(e.target.value)}
           className="mb-4"
         />
-        
+
         <FormControlLabel
           control={
-            <Checkbox 
-              checked={consent} 
-              onChange={(e) => setConsent(e.target.checked)} 
+            <Checkbox
+              checked={consent}
+              onChange={(e) => setConsent(e.target.checked)}
               color="primary"
             />
           }
@@ -84,9 +85,9 @@ export default function TicketModal({ open, onClose, event }) {
       </DialogContent>
       <DialogActions className="p-4">
         <Button onClick={onClose} color="inherit">Cancel</Button>
-        <Button 
-          onClick={handleSubmit} 
-          variant="contained" 
+        <Button
+          onClick={handleSubmit}
+          variant="contained"
           disabled={loading}
           className="bg-green-600 hover:bg-green-700 text-white font-bold"
         >
